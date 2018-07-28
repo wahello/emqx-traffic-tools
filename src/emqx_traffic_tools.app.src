@@ -1,0 +1,17 @@
+{application, emqx_traffic_tools,
+ [{description, "EMQ X Traffic Tool"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {maintainers, ["Gilbert Wong"]},
+  {modules, []},
+  {licenses, ["Apache License 2.0"]},
+  {links, [{"Github", "https://github.com/emqx/emqx-traffic-tools"}]},
+  {build_tools, ["make", "rebar3"]},
+  {files, ["src", "include", "rebar.config", "README.md", "LICENSE", "Makefile"]}
+ ]
+}.
