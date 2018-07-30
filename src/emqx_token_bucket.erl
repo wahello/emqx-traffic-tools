@@ -16,13 +16,11 @@
 -module(emqx_token_bucket).
 
 -export([
-         init/0,
+         init_ets/0,
          init_token_bucket/3,
-         init_token_bucket_ets/3,
+         init_token_bucket_ets/1,
          check_token_bucket/2
         ]).
-
--spec init() -> atom().
 
 -record(token_bucket, {
                        burst_size    :: non_neg_integer(), % max number of tokens required
@@ -33,12 +31,6 @@
                       }).
 
 -type(token_bucket() :: #token_bucket{}).
-
--define(TOKEN_BUCKET, #token_bucket{ burst_size = BurstSize,
-                                     limit_tokens = LimitTokens,
-                                     interval = Interval,
-                                     remain_tokens = LimitTokens,
-                                     last_time = now_ms()}).
 
 %%------------------------------------------------------------------
 %% Note:
@@ -59,7 +51,7 @@
 %%------------------------------------------------------------------
 
 %% @doc create ets table
-init() ->
+init_ets() ->
     ets:new(buckets, [named_table, public, set,
                       {read_concurrency, true},
                       {write_concurrency, true}
@@ -67,21 +59,25 @@ init() ->
 
 
 %% @doc create token bucket in ets
--spec(init_token_bucket_ets(non_neg_integer(), pos_integer(), pos_integer()) -> atom()).
-init_token_bucket_ets(BurstSize, LimitTokens, Interval) when BurstSize > LimitTokens ->
-    ets:insert(buckets,?TOKEN_BUCKET).
+-spec(init_token_bucket_ets(token_bucket()) -> atom()).
+init_token_bucket_ets(TokenBucket) ->
+    ets:insert(buckets, TokenBucket).
 
 %% @doc create token bucket
 -spec(init_token_bucket(non_neg_integer(), pos_integer(), pos_integer()) -> token_bucket()).
 init_token_bucket(BurstSize, LimitTokens, Interval) when BurstSize > LimitTokens ->
-    ?TOKEN_BUCKET.
+    #token_bucket{ burst_size = BurstSize,
+                   limit_tokens = LimitTokens,
+                   interval = Interval,
+                   remain_tokens = LimitTokens,
+                   last_time = now_ms()}.
 
 
 -spec(check_token_bucket(non_neg_integer(), atom()|token_bucket()) -> {non_neg_integer(), token_bucket()}).
-check_token_bucket(Dataflow, pool) ->
+check_token_bucket(Dataflow, with_ets) ->
     [TokenBucket | _] = ets:lookup(buckets, token_bucket),
     {token_bucket, BurstSize, LimitTokens, Interval, RemainTokens, LastTime} = TokenBucket,
-    {_Interval, NewTokenBucket} =  check_token_bucket(Dataflow, #token_bucket{
+    {Pause, NewTokenBucket} =  check_token_bucket(Dataflow, #token_bucket{
                                                                    burst_size = BurstSize,
                                                                    remain_tokens = RemainTokens,
                                                                    interval = Interval,
@@ -90,9 +86,9 @@ check_token_bucket(Dataflow, pool) ->
                                                                   }),
     case ets:insert(buckets, NewTokenBucket) of
         true ->
-            Interval;
+            Pause;
         false ->
-            check_token_bucket(Dataflow,poll)
+            check_token_bucket(Dataflow,with_ets)
     end;
 check_token_bucket(Dataflow, TokenBucket = #token_bucket{burst_size = BurstSize,
                                                          remain_tokens = RemainTokens,
@@ -101,7 +97,7 @@ check_token_bucket(Dataflow, TokenBucket = #token_bucket{burst_size = BurstSize,
                                                          last_time = LastTime}) ->
     Tokens = erlang:min(BurstSize, RemainTokens
                         + trunc(LimitTokens
-                                * (emqx_time:now_secs() - LastTime)
+                                * (now_ms() - LastTime)
                                 / Interval)),
     case Tokens >= Dataflow of
         true  -> %% Tokens available
@@ -126,3 +122,4 @@ now_ms() ->
 
 now_ms({MegaSecs, Secs, MicroSecs}) ->
     (MegaSecs * 1000000 + Secs) * 1000 + round(MicroSecs/1000).
+

@@ -1,4 +1,4 @@
-REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
+# REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
 
 ifeq ($(wildcard rebar3),rebar3)
 REBAR3 = $(CURDIR)/rebar3
@@ -28,15 +28,13 @@ clean:
 	@$(REBAR3) clean
 
 distclean: clean
-	@$(REBAR3) delete-deps
+	rm -rf _build
 
 docs:
 	@$(REBAR3) edoc
 
-
 test:
-	@$(REBAR3) do ct, cover
+	@$(REBAR3) do eunit, ct, cover
 
-
-release: test
+release:
 	@$(REBAR3) release

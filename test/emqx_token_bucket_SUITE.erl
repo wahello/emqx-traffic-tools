@@ -16,17 +16,97 @@
 
 -module(emqx_token_bucket_SUITE).
 
--include_lib("eunit/include/eunit.hrl").
 
 -include_lib("common_test/include/ct.hrl").
+
+-include_lib("eunit/include/eunit.hrl").
 
 -compile(export_all).
 -compile(nowarn_export_all).
 
+%%-----------------------------------------
+%%  Common Test
+%%-----------------------------------------
 
-%% @doc test token bucket limiter without ets
-token_bucket_test() ->
-    ok.
+all() ->
+    [
+     test_token_bucket_without_ets,
+     test_token_bucket_with_ets
+    ].
 
-token_bucket_ets_test() ->
-    ok.
+make_dataflow_without_ets(Datas, TokenBucket) ->
+    timer:sleep(5),
+    ConsumeData = consume_data(10),
+    {Pause, NewTokenBucket} = emqx_token_bucket:check_token_bucket(ConsumeData, TokenBucket),
+    timer:sleep(Pause),
+    case Datas > ConsumeData of
+        true -> make_dataflow_without_ets(Datas - ConsumeData, NewTokenBucket);
+        false -> ok
+    end.
+
+make_dataflow_with_ets(Datas) ->
+    ets:new(datas, [named_table, public, set,
+                    {read_concurrency, true},
+                    {write_concurrency, true}]),
+    ets:insert(datas, {remain_datas, Datas}).
+
+make_processes_consume_ets(ProcNum, Pid) ->
+    [spawn_link(fun() ->
+                        consume_data_in_data_ets(Pid) end)
+     || _ <- lists:seq(1, ProcNum)].
+
+consume_data_in_data_ets(Pid) ->
+    timer:sleep(10),
+    ConsumeData = consume_data(10),
+    Pause = emqx_token_bucket:check_token_bucket(ConsumeData, with_ets),
+    timer:sleep(Pause),
+    [DataRecord | _] = ets:lookup(datas, remain_datas),
+    {remain_datas, RemainDatas} = DataRecord,
+    case RemainDatas > ConsumeData of
+        true ->
+            ets:insert(datas,{remain_datas, RemainDatas - ConsumeData}),
+            consume_data_in_data_ets(Pid);
+        false ->
+            Pid ! exit
+    end.
+
+
+test_token_bucket_with_ets(_Config) ->
+    ProcessNum = 2,
+    emqx_token_bucket:init_ets(),
+    TokenBucket = emqx_token_bucket:init_token_bucket(100, 5, 5),
+    emqx_token_bucket:init_token_bucket_ets(TokenBucket),
+    make_dataflow_with_ets(200),
+    make_processes_consume_ets(ProcessNum, self()),
+    receive
+        _exit ->
+            ok
+    end.
+
+test_token_bucket_without_ets(_Config) ->
+    TokenBucket = emqx_token_bucket:init_token_bucket(100, 5, 5),
+    make_dataflow_without_ets(100, TokenBucket).
+
+
+consume_data(ConsumeData) ->
+    rand:uniform(ConsumeData).
+
+%%-----------------------------------------
+%%  Eunit Test
+%%-----------------------------------------
+
+token_bucket_test_()->
+    TokenBucket = emqx_token_bucket:init_token_bucket(100, 5, 1000),
+    [
+     ?_assertMatch(buckets, emqx_token_bucket:init_ets()),
+     ?_assertMatch(true, emqx_token_bucket:init_token_bucket_ets(TokenBucket)),
+     ?_assertMatch({0, _},
+                   emqx_token_bucket:check_token_bucket(5, TokenBucket)),
+     ?_assertMatch({1000, _},
+                   emqx_token_bucket:check_token_bucket(10, TokenBucket)),
+     ?_assertEqual(0,
+                   emqx_token_bucket:check_token_bucket(5, with_ets)),
+     ?_assertEqual(1000,
+                   emqx_token_bucket:check_token_bucket(10, with_ets)),
+     ?_assertMatch(true, ets:delete(buckets))
+    ].

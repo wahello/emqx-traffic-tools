@@ -21,9 +21,9 @@
 
 <h2><a name="index">Function Index</a></h2>
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#check_token_bucket-2">check_token_bucket/2</a></td><td></td></tr>
-<tr><td valign="top"><a href="#init-0">init/0</a></td><td>create ets table.</td></tr>
+<tr><td valign="top"><a href="#init_ets-0">init_ets/0</a></td><td>create ets table.</td></tr>
 <tr><td valign="top"><a href="#init_token_bucket-3">init_token_bucket/3</a></td><td>create token bucket.</td></tr>
-<tr><td valign="top"><a href="#init_token_bucket_ets-3">init_token_bucket_ets/3</a></td><td>create token bucket in ets.</td></tr>
+<tr><td valign="top"><a href="#init_token_bucket_ets-1">init_token_bucket_ets/1</a></td><td>create token bucket in ets.</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -33,9 +33,9 @@
 <p><tt>check_token_bucket(Dataflow::non_neg_integer(), TokenBucket::atom() | <a href="#type-token_bucket">token_bucket()</a>) -&gt; {non_neg_integer(), <a href="#type-token_bucket">token_bucket()</a>}</tt><br></p>
 </div>
 
-<h3 class="function"><a name="init-0">init/0</a></h3>
+<h3 class="function"><a name="init_ets-0">init_ets/0</a></h3>
 <div class="spec">
-<p><tt>init() -&gt; atom()</tt><br></p>
+<p><tt>init_ets() -&gt; any()</tt></p>
 </div><p>create ets table</p>
 
 <h3 class="function"><a name="init_token_bucket-3">init_token_bucket/3</a></h3>
@@ -43,9 +43,9 @@
 <p><tt>init_token_bucket(BurstSize::non_neg_integer(), LimitTokens::pos_integer(), Interval::pos_integer()) -&gt; <a href="#type-token_bucket">token_bucket()</a></tt><br></p>
 </div><p>create token bucket</p>
 
-<h3 class="function"><a name="init_token_bucket_ets-3">init_token_bucket_ets/3</a></h3>
+<h3 class="function"><a name="init_token_bucket_ets-1">init_token_bucket_ets/1</a></h3>
 <div class="spec">
-<p><tt>init_token_bucket_ets(BurstSize::non_neg_integer(), LimitTokens::pos_integer(), Interval::pos_integer()) -&gt; atom()</tt><br></p>
+<p><tt>init_token_bucket_ets(TokenBucket::<a href="#type-token_bucket">token_bucket()</a>) -&gt; atom()</tt><br></p>
 </div><p>create token bucket in ets</p>
 <hr>
 
