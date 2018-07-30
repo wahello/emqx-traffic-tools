@@ -110,6 +110,8 @@ token_bucket_test_()->
                    emqx_token_bucket:check_token_bucket(5, TokenBucket)),
      ?_assertMatch({1000, _},
                    emqx_token_bucket:check_token_bucket(10, TokenBucket)),
+     ?_assertMatch({token_bucket,_BurstSize, _LimitTokens, _Interval, _RemainTokens, _LastTime},
+                   emqx_token_bucket:info_token_bucket_ets()),
      ?_assertEqual(0,
                    emqx_token_bucket:check_token_bucket(5, with_ets)),
      ?_assertEqual(1000,

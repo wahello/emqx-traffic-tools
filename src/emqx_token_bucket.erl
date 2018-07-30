@@ -19,6 +19,7 @@
          init_ets/0,
          init_token_bucket/3,
          init_token_bucket_ets/1,
+         info_token_bucket_ets/0,
          check_token_bucket/2
         ]).
 
@@ -63,6 +64,12 @@ init_ets() ->
 init_token_bucket_ets(TokenBucket) ->
     ets:insert(buckets, TokenBucket).
 
+%% @doc lookup token bucket in ets
+-spec(info_token_bucket_ets() -> list()).
+info_token_bucket_ets() ->
+    [TokenBucket | _] = ets:lookup(buckets, token_bucket),
+    TokenBucket.
+
 %% @doc create token bucket
 -spec(init_token_bucket(non_neg_integer(), pos_integer(), pos_integer()) -> token_bucket()).
 init_token_bucket(BurstSize, LimitTokens, Interval) when BurstSize > LimitTokens ->
@@ -75,7 +82,7 @@ init_token_bucket(BurstSize, LimitTokens, Interval) when BurstSize > LimitTokens
 
 -spec(check_token_bucket(non_neg_integer(), atom()|token_bucket()) -> {non_neg_integer(), token_bucket()}).
 check_token_bucket(Dataflow, with_ets) ->
-    [TokenBucket | _] = ets:lookup(buckets, token_bucket),
+    TokenBucket = info_token_bucket_ets(),
     {token_bucket, BurstSize, LimitTokens, Interval, RemainTokens, LastTime} = TokenBucket,
     {Pause, NewTokenBucket} =  check_token_bucket(Dataflow, #token_bucket{
                                                                    burst_size = BurstSize,
