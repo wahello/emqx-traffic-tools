@@ -39,9 +39,13 @@ make_dataflow_without_ets(Datas, TokenBucket) ->
     ConsumeData = consume_data(10),
     {Pause, NewTokenBucket} = emqx_token_bucket:check_token_bucket(ConsumeData, TokenBucket),
     timer:sleep(Pause),
-    case Datas > ConsumeData of
-        true -> make_dataflow_without_ets(Datas - ConsumeData, NewTokenBucket);
-        false -> ok
+    case Datas  of
+        Datas when Datas >= ConsumeData ->
+            make_dataflow_without_ets(Datas - ConsumeData, NewTokenBucket);
+        Datas when Datas < ConsumeData, Datas > 0 ->
+            make_dataflow_without_ets(Datas, NewTokenBucket);
+        Datas when Datas =:= 0 ->
+            ok
     end.
 
 make_dataflow_with_ets(Datas) ->
@@ -62,14 +66,16 @@ consume_data_in_data_ets(Pid) ->
     timer:sleep(Pause),
     [DataRecord | _] = ets:lookup(datas, remain_datas),
     {remain_datas, RemainDatas} = DataRecord,
-    case RemainDatas > ConsumeData of
-        true ->
+    case RemainDatas of
+        RemainDatas when RemainDatas >= ConsumeData ->
             ets:insert(datas,{remain_datas, RemainDatas - ConsumeData}),
             consume_data_in_data_ets(Pid);
-        false ->
+        RemainDatas when RemainDatas < ConsumeData, RemainDatas > 0 ->
+            ets:insert(datas,{remain_datas, RemainDatas}),
+            consume_data_in_data_ets(Pid);
+        RemainDatas when RemainDatas =:= 0 ->
             Pid ! exit
     end.
-
 
 test_token_bucket_with_ets(_Config) ->
     ProcessNum = 2,
