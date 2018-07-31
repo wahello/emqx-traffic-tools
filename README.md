@@ -44,3 +44,7 @@ You can also get the token bucket state in ets.
 ```
 TokenBucket = emqx_token_bucket:info_token_bucket().
 ```
+
+## Flapping　Algorithm
+
+
