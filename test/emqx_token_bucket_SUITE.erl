@@ -32,6 +32,7 @@ all() ->
     [
      test_token_bucket_without_ets,
      test_token_bucket_with_ets
+     %% token_bucket_test
     ].
 
 make_dataflow_without_ets(Datas, TokenBucket) ->
@@ -54,67 +55,47 @@ make_dataflow_with_ets(Datas) ->
                     {write_concurrency, true}]),
     ets:insert(datas, {remain_datas, Datas}).
 
-make_processes_consume_ets(ProcNum, Pid) ->
+make_processes_consume_ets(ProcNum, Pid, BucketName) ->
     [spawn_link(fun() ->
-                        consume_data_in_data_ets(Pid) end)
+                        consume_data_in_data_ets(Pid, BucketName) end)
      || _ <- lists:seq(1, ProcNum)].
 
-consume_data_in_data_ets(Pid) ->
+consume_data_in_data_ets(Pid, BucketName) ->
     timer:sleep(10),
     ConsumeData = consume_data(10),
-    Pause = emqx_token_bucket:check_token_bucket(ConsumeData, with_ets),
+    Pause = emqx_token_bucket:check_token_bucket_in_ets(ConsumeData, BucketName),
     timer:sleep(Pause),
     [DataRecord | _] = ets:lookup(datas, remain_datas),
     {remain_datas, RemainDatas} = DataRecord,
     case RemainDatas of
         RemainDatas when RemainDatas >= ConsumeData ->
             ets:insert(datas,{remain_datas, RemainDatas - ConsumeData}),
-            consume_data_in_data_ets(Pid);
+            consume_data_in_data_ets(Pid, BucketName);
         RemainDatas when RemainDatas < ConsumeData, RemainDatas > 0 ->
             ets:insert(datas,{remain_datas, RemainDatas}),
-            consume_data_in_data_ets(Pid);
+            consume_data_in_data_ets(Pid, BucketName);
         RemainDatas when RemainDatas =:= 0 ->
             Pid ! exit
     end.
 
 test_token_bucket_with_ets(_Config) ->
     ProcessNum = 2,
-    emqx_token_bucket:init_ets(),
-    TokenBucket = emqx_token_bucket:init_token_bucket(100, 5, 5),
-    emqx_token_bucket:init_token_bucket_ets(TokenBucket),
+    TokenBucket = emqx_token_bucket:init_token_bucket(test, 100, 5, 5),
+    emqx_token_bucket:init_token_buckets(),
+    emqx_token_bucket:add_token_bucket(TokenBucket),
     make_dataflow_with_ets(200),
-    make_processes_consume_ets(ProcessNum, self()),
+    make_processes_consume_ets(ProcessNum, self(), test),
     receive
         _exit ->
+            emqx_token_bucket:delete_token_bucket(test),
+            emqx_token_bucket:delete_token_buckets(),
             ok
     end.
 
 test_token_bucket_without_ets(_Config) ->
-    TokenBucket = emqx_token_bucket:init_token_bucket(100, 5, 5),
+    TokenBucket = emqx_token_bucket:init_token_bucket(test, 100, 5, 5),
     make_dataflow_without_ets(100, TokenBucket).
 
 
 consume_data(ConsumeData) ->
     rand:uniform(ConsumeData).
-
-%%-----------------------------------------
-%%  Eunit Test
-%%-----------------------------------------
-
-token_bucket_test_()->
-    TokenBucket = emqx_token_bucket:init_token_bucket(100, 5, 1000),
-    [
-     ?_assertMatch(buckets, emqx_token_bucket:init_ets()),
-     ?_assertMatch(true, emqx_token_bucket:init_token_bucket_ets(TokenBucket)),
-     ?_assertMatch({0, _},
-                   emqx_token_bucket:check_token_bucket(5, TokenBucket)),
-     ?_assertMatch({1000, _},
-                   emqx_token_bucket:check_token_bucket(10, TokenBucket)),
-     ?_assertMatch({token_bucket,_BurstSize, _LimitTokens, _Interval, _RemainTokens, _LastTime},
-                   emqx_token_bucket:info_token_bucket_ets()),
-     ?_assertEqual(0,
-                   emqx_token_bucket:check_token_bucket(5, with_ets)),
-     ?_assertEqual(1000,
-                   emqx_token_bucket:check_token_bucket(10, with_ets)),
-     ?_assertMatch(true, ets:delete(buckets))
-    ].

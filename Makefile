@@ -34,7 +34,7 @@ docs:
 	@$(REBAR3) edoc
 
 test:
-	@$(REBAR3) do eunit, ct, cover
+	@$(REBAR3) do ct, cover
 
 release:
 	@$(REBAR3) release

@@ -10,18 +10,48 @@
 <hr>
 
 <h1>Module emqx_network_flapping</h1>
-<ul class="index"><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+<ul class="index"><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+
+
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-flapping_record">flapping_record()</a></h3>
+<p><tt>flapping_record() = #flapping_record{name = atom(), flapping_state = atom(), check_times = pos_integer(), time_interval = pos_integer(), high_flap_treshold = float(), low_flap_treshold = float()}</tt></p>
 
 
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#check_network_flapping-6">check_network_flapping/6</a></td><td></td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add_flapping_record-1">add_flapping_record/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#check_network_flapping-3">check_network_flapping/3</a></td><td></td></tr>
+<tr><td valign="top"><a href="#check_network_flapping_record-3">check_network_flapping_record/3</a></td><td></td></tr>
+<tr><td valign="top"><a href="#init_flapping_records-0">init_flapping_records/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#init_flapping_state-5">init_flapping_state/5</a></td><td></td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
 
-<h3 class="function"><a name="check_network_flapping-6">check_network_flapping/6</a></h3>
+<h3 class="function"><a name="add_flapping_record-1">add_flapping_record/1</a></h3>
 <div class="spec">
-<p><tt>check_network_flapping(CheckTimes::pos_integer(), TimeInterval::pos_integer(), HighFlapTreshold::float(), LowFlapThreshold::float(), Fun::function(), State::term()) -&gt; atom()</tt><br></p>
+<p><tt>add_flapping_record(FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; atom()</tt><br></p>
+</div>
+
+<h3 class="function"><a name="check_network_flapping-3">check_network_flapping/3</a></h3>
+<div class="spec">
+<p><tt>check_network_flapping(Fun::function(), StateChecked::term(), FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; atom()</tt><br></p>
+</div>
+
+<h3 class="function"><a name="check_network_flapping_record-3">check_network_flapping_record/3</a></h3>
+<div class="spec">
+<p><tt>check_network_flapping_record(CheckStateFun, StateChecked, Name) -&gt; any()</tt></p>
+</div>
+
+<h3 class="function"><a name="init_flapping_records-0">init_flapping_records/0</a></h3>
+<div class="spec">
+<p><tt>init_flapping_records() -&gt; atom()</tt><br></p>
+</div>
+
+<h3 class="function"><a name="init_flapping_state-5">init_flapping_state/5</a></h3>
+<div class="spec">
+<p><tt>init_flapping_state(Name::atom(), CheckTimes::pos_integer(), TimeInterval::pos_integer(), HighFlapTreshold::float(), LowFlapTreshold::float()) -&gt; <a href="#type-flapping_record">flapping_record()</a></tt><br></p>
 </div>
 <hr>
 
