@@ -85,7 +85,7 @@ delete_token_bucket(BucketName) ->
     ets:delete(token_buckets, BucketName).
 
 %% @doc lookup token bucket in ets
--spec info_token_bucket(atom()) -> list().
+-spec info_token_bucket(atom()) -> tuple().
 info_token_bucket(BucketName) ->
     [TokenBucket | _] = ets:lookup(token_buckets, BucketName),
     TokenBucket.

@@ -136,7 +136,7 @@ check_network_flapping(CheckStateFun, StateChecked,
 weight_transition(CheckTimes, TotalTimes) ->
     0.8 + 0.4/TotalTimes * CheckTimes.
 
--spec check_state_transition(non_neg_integer(), pos_integer(), pos_integer(), Fun::fun(), term(), pos_integer()) -> pos_integer().
+-spec check_state_transition(non_neg_integer(), pos_integer(), pos_integer(), Fun::fun(), term(), number()) -> pos_integer().
 check_state_transition(0, _TimeInterval, _Total, _CheckState, _State, Weight) ->
     Weight;
 check_state_transition(Count, TimeInterval, Total, CheckState, State, Weight)
