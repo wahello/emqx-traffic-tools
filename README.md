@@ -1,4 +1,4 @@
-Network Traffic Tools for Erlang
+Network traffic tools for Erlang
 
 License: Apache License 2.0
 
@@ -18,7 +18,7 @@ The chart below shows how token bucket algorithm works:
 
 ## Token Bucket Algorithm
 
-* **emqx_token_bucket** - Simple (token bucket) implementation which control network data flow by returning a time interval for user.
+**emqx_token_bucket** - Simple (token bucket) implementation which control network data flow by returning a time interval for user.
 
 The Token Bucket Algorithm implemented in Emqx Traffic Tools not only supports network traffic in single process, but also supports to manage a pool of processes by using ets to record tokens.
 
@@ -59,7 +59,7 @@ emqx_token_bucket:delete_token_bucket(test)
 Notice: The name of token bucket must be atom type.
 
 ## Flapping Algorithm
-* **emqx_network_flapping** - Simple implementation which return a flapping state by checking the state transitions rate.
+**emqx_network_flapping** - Simple implementation which return a flapping state by checking the state transitions rate.
 
 This algorithm is used to check to see if the state has started or stopped flapping. It does this by:
 
@@ -68,7 +68,6 @@ This algorithm is used to check to see if the state has started or stopped flapp
 * Using the state transitions to determine a percent state change value (a measure of change** for the host or service
 * Comparing the percent state change value against low and high flapping thresholds
 
-** Example usage ** (without ets)
 
 Definition of flapping_record 
 ``` erlang
@@ -82,7 +81,8 @@ Definition of flapping_record
                          }).
 ```
 
-Get flapping state just one time.
+**Example usage** (without ets)
+
 ```erlang
 
 FlappingRecord = emqx_network_flapping:init_flapping_record(test,30,1, 45/100, 30/100),
@@ -93,7 +93,7 @@ FlappingRecord1 = emqx_network_flapping:check_network_flapping_state(
 FlappingState = FlappingRecord1#flapping_record.flapping_state.
 ```
 
-Get multiple flapping states multiple times with ets.
+**Example usage** (with ets)
 ```erlang
 emqx_network_flapping:create_flapping_records(),
 FlappingRecord = emqx_network_flapping:init_flapping_record(test, 30, 1, 45/100, 30/100),
