@@ -17,8 +17,8 @@
 
 -export([
          init_token_bucket/4,
-         init_token_buckets/0,
-         delete_token_buckets/0,
+         create_token_buckets/0,
+         drop_token_buckets/0,
          add_token_bucket/1,
          delete_token_bucket/1,
          info_token_bucket/1,
@@ -56,16 +56,16 @@
 %%------------------------------------------------------------------
 
 %% @doc create ets table
--spec(init_token_buckets() -> atom()).
-init_token_buckets() ->
+-spec(create_token_buckets() -> atom()).
+create_token_buckets() ->
     ets:new(token_buckets, [named_table, public, set,
                             {read_concurrency, true},
                             {write_concurrency, true},
                             {keypos, 2}]).
 
 %% @doc drop ets table
--spec(delete_token_buckets() -> boolean()).
-delete_token_buckets() ->
+-spec(drop_token_buckets() -> boolean()).
+drop_token_buckets() ->
     ets:delete(token_buckets).
 
 

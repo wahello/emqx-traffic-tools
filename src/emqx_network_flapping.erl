@@ -38,34 +38,103 @@
 %%=============================================================================================
 
 -export([
-         check_network_flapping/7
+         create_flapping_records/0,
+         drop_flapping_records/0,
+         init_flapping_record/5,
+         add_flapping_record/1,
+         update_flapping_record/1,
+         info_flapping_record/1,
+         delete_flapping_record/1,
+         check_network_flapping/3,
+         check_network_flapping_record/3
         ]).
 
--spec(check_network_flapping(pos_integer(), pos_integer(), float(), float(),
-                             Fun::fun(), term(), atom()) -> atom()).
-check_network_flapping(CheckTimes, TimeInterval, HighFlapTreshold,
-                       LowFlapThreshold, CheckState, State,
-                       OldFlapState) ->
-    Weights = check_state_transition(CheckTimes,TimeInterval, CheckTimes, CheckState, State, 0),
+-record(flapping_record, {
+                          name                :: atom(),          % the name of flapping record
+                          flapping_state      :: atom(),          % flapping state
+                          check_times         :: pos_integer(),   % check times specified
+                          time_interval       :: pos_integer(),   % time interval between each check(milliseconds)
+                          high_flap_treshold  :: float(),         % high flapping treshold specified
+                          low_flap_treshold   :: float()          % low  flapping treshold specified
+                         }).
+
+-type(flapping_record() :: #flapping_record{}).
+
+-spec create_flapping_records() -> atom().
+create_flapping_records() ->
+    ets:new(flapping_records, [named_table, public, set,
+                               {read_concurrency, true},
+                               {write_concurrency, true},
+                               {keypos, 2}]).
+
+drop_flapping_records() ->
+    ets:delete(flapping_records).
+
+-spec add_flapping_record(flapping_record()) -> atom().
+add_flapping_record(FlappingRecord) ->
+    ets:insert(flapping_records, FlappingRecord).
+
+-spec update_flapping_record(flapping_record()) -> atom().
+update_flapping_record(FlappingRecord) ->
+    ets:insert(flapping_records, FlappingRecord).
+
+-spec delete_flapping_record(atom()) -> boolean().
+delete_flapping_record(Name) ->
+    ets:delete(flapping_records, Name).
+
+info_flapping_record(Name) ->
+    [FlappingRecord | _] = ets:lookup(flapping_records, Name),
+    FlappingRecord.
+
+-spec init_flapping_record(atom(), pos_integer(), pos_integer(),float(),
+                          float()) -> flapping_record().
+init_flapping_record(Name, CheckTimes, TimeInterval, HighFlapTreshold,
+                    LowFlapTreshold) ->
+    #flapping_record{
+       name = Name,
+       flapping_state = flapping_stop,
+       check_times = CheckTimes,
+       time_interval = TimeInterval,
+       high_flap_treshold = HighFlapTreshold,
+       low_flap_treshold = LowFlapTreshold
+      }.
+
+check_network_flapping_record(CheckStateFun, StateChecked, Name) ->
+    FlappingRecord = info_flapping_record(Name),
+    NextFlappingRecord = check_network_flapping(CheckStateFun, StateChecked, FlappingRecord),
+    update_flapping_record(NextFlappingRecord).
+
+-spec check_network_flapping(Fun::fun(), term(), flapping_record()) -> {atom(), flapping_record()}.
+check_network_flapping(CheckStateFun, StateChecked,
+                       FlappingRecord = #flapping_record{
+                                           flapping_state = FlappingState,
+                                           check_times = CheckTimes,
+                                           time_interval = TimeInterval,
+                                           high_flap_treshold = HighFlapTreshold,
+                                           low_flap_treshold = LowFlapTreshold
+                                          }) ->
+    Weights = check_state_transition(CheckTimes,TimeInterval, CheckTimes, CheckStateFun, StateChecked, 0),
     case Weights/CheckTimes of
-        StateTransRate when StateTransRate >= HighFlapTreshold,
-                            OldFlapState =:= flapping_stop ->
-            flapping_start;
-        StateTransRate when StateTransRate =< LowFlapThreshold,
-                            OldFlapState =:= flapping_start ->
-            flapping_stop;
+        NewFlappingState when NewFlappingState >= HighFlapTreshold,
+                              FlappingState =:= flapping_stop ->
+            FlappingRecord#flapping_record{
+              flapping_state = flapping_start
+             };
+        NewFlappingState when NewFlappingState =< LowFlapTreshold,
+                              FlappingState =:= flapping_start ->
+            FlappingRecord#flapping_record{
+              flapping_state = flapping_stop
+             };
         _ ->
-            do_nothing
+            FlappingRecord
     end.
 
--spec(weight_transition(pos_integer(), pos_integer()) -> float()).
-weight_transition(CheckTimes, TotalTimes) ->
-    %%  calculate current weight
-    %%  The scope is from 0.8 to 1.2
-    %%  the weight transition in every time = (1.2 - 0.8) / TotalTimes
-    0.8 + trunc(0.4/TotalTimes) * CheckTimes.
 
--spec(check_state_transition(non_neg_integer(), pos_integer(), pos_integer(), Fun::fun(), term(), pos_integer()) -> pos_integer()).
+-spec weight_transition(pos_integer(), pos_integer()) -> float().
+weight_transition(CheckTimes, TotalTimes) ->
+    0.8 + 0.4/TotalTimes * CheckTimes.
+
+-spec check_state_transition(non_neg_integer(), pos_integer(), pos_integer(), Fun::fun(), term(), pos_integer()) -> pos_integer().
 check_state_transition(0, _TimeInterval, _Total, _CheckState, _State, Weight) ->
     Weight;
 check_state_transition(Count, TimeInterval, Total, CheckState, State, Weight)
@@ -75,6 +144,7 @@ check_state_transition(Count, TimeInterval, Total, CheckState, State, Weight)
     case State =:= NewState of
         false ->
             NewWeight = Weight + weight_transition(Total - Count + 1, Total),
+            io:format("Weight : ~p  ~p  ~p~n", [Weight, Total - Count + 1, Total]),
             check_state_transition(Count - 1, TimeInterval, Total, CheckState, NewState, NewWeight);
         true ->
             check_state_transition(Count - 1, TimeInterval, Total, CheckState, State, Weight)

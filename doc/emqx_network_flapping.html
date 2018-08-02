@@ -23,8 +23,12 @@
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add_flapping_record-1">add_flapping_record/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#check_network_flapping-3">check_network_flapping/3</a></td><td></td></tr>
 <tr><td valign="top"><a href="#check_network_flapping_record-3">check_network_flapping_record/3</a></td><td></td></tr>
-<tr><td valign="top"><a href="#init_flapping_records-0">init_flapping_records/0</a></td><td></td></tr>
-<tr><td valign="top"><a href="#init_flapping_state-5">init_flapping_state/5</a></td><td></td></tr>
+<tr><td valign="top"><a href="#create_flapping_records-0">create_flapping_records/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#delete_flapping_record-1">delete_flapping_record/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#drop_flapping_records-0">drop_flapping_records/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#info_flapping_record-1">info_flapping_record/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#init_flapping_record-5">init_flapping_record/5</a></td><td></td></tr>
+<tr><td valign="top"><a href="#update_flapping_record-1">update_flapping_record/1</a></td><td></td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -36,7 +40,7 @@
 
 <h3 class="function"><a name="check_network_flapping-3">check_network_flapping/3</a></h3>
 <div class="spec">
-<p><tt>check_network_flapping(Fun::function(), StateChecked::term(), FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; atom()</tt><br></p>
+<p><tt>check_network_flapping(Fun::function(), StateChecked::term(), FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; {atom(), <a href="#type-flapping_record">flapping_record()</a>}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="check_network_flapping_record-3">check_network_flapping_record/3</a></h3>
@@ -44,14 +48,34 @@
 <p><tt>check_network_flapping_record(CheckStateFun, StateChecked, Name) -&gt; any()</tt></p>
 </div>
 
-<h3 class="function"><a name="init_flapping_records-0">init_flapping_records/0</a></h3>
+<h3 class="function"><a name="create_flapping_records-0">create_flapping_records/0</a></h3>
 <div class="spec">
-<p><tt>init_flapping_records() -&gt; atom()</tt><br></p>
+<p><tt>create_flapping_records() -&gt; atom()</tt><br></p>
 </div>
 
-<h3 class="function"><a name="init_flapping_state-5">init_flapping_state/5</a></h3>
+<h3 class="function"><a name="delete_flapping_record-1">delete_flapping_record/1</a></h3>
 <div class="spec">
-<p><tt>init_flapping_state(Name::atom(), CheckTimes::pos_integer(), TimeInterval::pos_integer(), HighFlapTreshold::float(), LowFlapTreshold::float()) -&gt; <a href="#type-flapping_record">flapping_record()</a></tt><br></p>
+<p><tt>delete_flapping_record(Name::atom()) -&gt; boolean()</tt><br></p>
+</div>
+
+<h3 class="function"><a name="drop_flapping_records-0">drop_flapping_records/0</a></h3>
+<div class="spec">
+<p><tt>drop_flapping_records() -&gt; any()</tt></p>
+</div>
+
+<h3 class="function"><a name="info_flapping_record-1">info_flapping_record/1</a></h3>
+<div class="spec">
+<p><tt>info_flapping_record(Name) -&gt; any()</tt></p>
+</div>
+
+<h3 class="function"><a name="init_flapping_record-5">init_flapping_record/5</a></h3>
+<div class="spec">
+<p><tt>init_flapping_record(Name::atom(), CheckTimes::pos_integer(), TimeInterval::pos_integer(), HighFlapTreshold::float(), LowFlapTreshold::float()) -&gt; <a href="#type-flapping_record">flapping_record()</a></tt><br></p>
+</div>
+
+<h3 class="function"><a name="update_flapping_record-1">update_flapping_record/1</a></h3>
+<div class="spec">
+<p><tt>update_flapping_record(FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; atom()</tt><br></p>
 </div>
 <hr>
 

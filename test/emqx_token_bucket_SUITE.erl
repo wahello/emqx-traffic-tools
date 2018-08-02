@@ -81,14 +81,14 @@ consume_data_in_data_ets(Pid, BucketName) ->
 test_token_bucket_with_ets(_Config) ->
     ProcessNum = 2,
     TokenBucket = emqx_token_bucket:init_token_bucket(test, 100, 5, 5),
-    emqx_token_bucket:init_token_buckets(),
+    emqx_token_bucket:create_token_buckets(),
     emqx_token_bucket:add_token_bucket(TokenBucket),
     make_dataflow_with_ets(200),
     make_processes_consume_ets(ProcessNum, self(), test),
     receive
         _exit ->
             emqx_token_bucket:delete_token_bucket(test),
-            emqx_token_bucket:delete_token_buckets(),
+            emqx_token_bucket:drop_token_buckets(),
             ok
     end.
 
