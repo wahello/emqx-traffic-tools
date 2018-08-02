@@ -20,7 +20,7 @@
 
 
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add_token_bucket-1">add_token_bucket/1</a></td><td>create token bucket in ets.</td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add_token_bucket-1">add_token_bucket/1</a></td><td>add token bucket in ets.</td></tr>
 <tr><td valign="top"><a href="#check_token_bucket-2">check_token_bucket/2</a></td><td></td></tr>
 <tr><td valign="top"><a href="#check_token_bucket_in_ets-2">check_token_bucket_in_ets/2</a></td><td>check token bucket in ets.</td></tr>
 <tr><td valign="top"><a href="#create_token_buckets-0">create_token_buckets/0</a></td><td>create ets table.</td></tr>
@@ -28,6 +28,7 @@
 <tr><td valign="top"><a href="#drop_token_buckets-0">drop_token_buckets/0</a></td><td>drop ets table.</td></tr>
 <tr><td valign="top"><a href="#info_token_bucket-1">info_token_bucket/1</a></td><td>lookup token bucket in ets.</td></tr>
 <tr><td valign="top"><a href="#init_token_bucket-4">init_token_bucket/4</a></td><td>create token bucket.</td></tr>
+<tr><td valign="top"><a href="#update_token_bucket-1">update_token_bucket/1</a></td><td>update token bucket in ets.</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -35,7 +36,7 @@
 <h3 class="function"><a name="add_token_bucket-1">add_token_bucket/1</a></h3>
 <div class="spec">
 <p><tt>add_token_bucket(TokenBucket::<a href="#type-token_bucket">token_bucket()</a>) -&gt; atom()</tt><br></p>
-</div><p>create token bucket in ets</p>
+</div><p>add token bucket in ets</p>
 
 <h3 class="function"><a name="check_token_bucket-2">check_token_bucket/2</a></h3>
 <div class="spec">
@@ -44,7 +45,7 @@
 
 <h3 class="function"><a name="check_token_bucket_in_ets-2">check_token_bucket_in_ets/2</a></h3>
 <div class="spec">
-<p><tt>check_token_bucket_in_ets(Dataflow::non_neg_integer(), BucketName::atom()) -&gt; {non_neg_integer(), <a href="#type-token_bucket">token_bucket()</a>}</tt><br></p>
+<p><tt>check_token_bucket_in_ets(Dataflow::non_neg_integer(), BucketName::atom()) -&gt; non_neg_integer()</tt><br></p>
 </div><p>check token bucket in ets</p>
 
 <h3 class="function"><a name="create_token_buckets-0">create_token_buckets/0</a></h3>
@@ -71,6 +72,11 @@
 <div class="spec">
 <p><tt>init_token_bucket(BucketName::atom(), BurstSize::non_neg_integer(), LimitTokens::pos_integer(), Interval::pos_integer()) -&gt; <a href="#type-token_bucket">token_bucket()</a></tt><br></p>
 </div><p>create token bucket</p>
+
+<h3 class="function"><a name="update_token_bucket-1">update_token_bucket/1</a></h3>
+<div class="spec">
+<p><tt>update_token_bucket(TokenBucket::<a href="#type-token_bucket">token_bucket()</a>) -&gt; atom()</tt><br></p>
+</div><p>update token bucket in ets</p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>

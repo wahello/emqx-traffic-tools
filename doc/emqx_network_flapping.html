@@ -40,12 +40,12 @@
 
 <h3 class="function"><a name="check_network_flapping-3">check_network_flapping/3</a></h3>
 <div class="spec">
-<p><tt>check_network_flapping(Fun::function(), StateChecked::term(), FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; {atom(), <a href="#type-flapping_record">flapping_record()</a>}</tt><br></p>
+<p><tt>check_network_flapping(Fun::function(), StateChecked::term(), FlappingRecord::<a href="#type-flapping_record">flapping_record()</a>) -&gt; <a href="#type-flapping_record">flapping_record()</a></tt><br></p>
 </div>
 
 <h3 class="function"><a name="check_network_flapping_record-3">check_network_flapping_record/3</a></h3>
 <div class="spec">
-<p><tt>check_network_flapping_record(CheckStateFun, StateChecked, Name) -&gt; any()</tt></p>
+<p><tt>check_network_flapping_record(Fun::function(), StateChecked::term(), Name::atom()) -&gt; atom()</tt><br></p>
 </div>
 
 <h3 class="function"><a name="create_flapping_records-0">create_flapping_records/0</a></h3>
@@ -60,12 +60,12 @@
 
 <h3 class="function"><a name="drop_flapping_records-0">drop_flapping_records/0</a></h3>
 <div class="spec">
-<p><tt>drop_flapping_records() -&gt; any()</tt></p>
+<p><tt>drop_flapping_records() -&gt; boolean()</tt><br></p>
 </div>
 
 <h3 class="function"><a name="info_flapping_record-1">info_flapping_record/1</a></h3>
 <div class="spec">
-<p><tt>info_flapping_record(Name) -&gt; any()</tt></p>
+<p><tt>info_flapping_record(Name::atom()) -&gt; <a href="#type-flapping_record">flapping_record()</a></tt><br></p>
 </div>
 
 <h3 class="function"><a name="init_flapping_record-5">init_flapping_record/5</a></h3>

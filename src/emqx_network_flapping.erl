@@ -34,7 +34,6 @@
 %%    Return(three states):
 %%         1. flapping_start
 %%         2. flapping_stop
-%%         3. do_nothing
 %%=============================================================================================
 
 -export([
@@ -67,6 +66,7 @@ create_flapping_records() ->
                                {write_concurrency, true},
                                {keypos, 2}]).
 
+-spec drop_flapping_records() -> boolean().
 drop_flapping_records() ->
     ets:delete(flapping_records).
 
@@ -82,6 +82,7 @@ update_flapping_record(FlappingRecord) ->
 delete_flapping_record(Name) ->
     ets:delete(flapping_records, Name).
 
+-spec info_flapping_record(atom()) -> flapping_record().
 info_flapping_record(Name) ->
     [FlappingRecord | _] = ets:lookup(flapping_records, Name),
     FlappingRecord.
@@ -99,12 +100,13 @@ init_flapping_record(Name, CheckTimes, TimeInterval, HighFlapTreshold,
        low_flap_treshold = LowFlapTreshold
       }.
 
+-spec check_network_flapping_record(Fun::fun(), term(), atom()) -> atom().
 check_network_flapping_record(CheckStateFun, StateChecked, Name) ->
     FlappingRecord = info_flapping_record(Name),
     NextFlappingRecord = check_network_flapping(CheckStateFun, StateChecked, FlappingRecord),
     update_flapping_record(NextFlappingRecord).
 
--spec check_network_flapping(Fun::fun(), term(), flapping_record()) -> {atom(), flapping_record()}.
+-spec check_network_flapping(Fun::fun(), term(), flapping_record()) -> flapping_record().
 check_network_flapping(CheckStateFun, StateChecked,
                        FlappingRecord = #flapping_record{
                                            flapping_state = FlappingState,
