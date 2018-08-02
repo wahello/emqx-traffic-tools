@@ -36,5 +36,8 @@ docs:
 test:
 	@$(REBAR3) do ct, cover
 
-release:
-	@$(REBAR3) release
+# release:
+# 	@$(REBAR3) release
+
+dialyzer:
+	@$(REBAR3) dialyzer

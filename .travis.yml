@@ -1,0 +1,10 @@
+language: erlang
+
+sudo: required
+
+otp_release:
+  - 21.0
+
+script:
+  - make all
+  - make dialyzer

@@ -1,3 +1,9 @@
+Network Traffic Tools for Erlang
+
+License: Apache License 2.0
+
+
+
 # Emqx Traffic Tools
 
 ## Introduction
@@ -105,7 +111,7 @@ You can also get, update and delete the flapping records in ets directly.
 ```erlang
 FlappingRecord1 = emqx_network_flapping:info_flapping_record(test),
 emqx_network_flapping:add_flapping_record(FlappingRecord),
-update_flapping_record(NextFlappingRecord).
+emqx_network_flapping:update_flapping_record(NextFlappingRecord).
 ```
 
 Notice: The name of flapping record must be atom type.
