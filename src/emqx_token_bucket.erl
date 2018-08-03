@@ -142,9 +142,6 @@ check_token_bucket(Dataflow, TokenBucket = #token_bucket{
 %%-----------------------------------------
 %%  internal function
 %%-----------------------------------------
+
 now_ms() ->
-    now_ms(os:timestamp()).
-
-now_ms({MegaSecs, Secs, MicroSecs}) ->
-    (MegaSecs * 1000000 + Secs) * 1000 + round(MicroSecs/1000).
-
+    erlang:system_time(millisecond).
