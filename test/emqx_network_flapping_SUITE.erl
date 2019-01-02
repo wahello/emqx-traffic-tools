@@ -37,23 +37,19 @@ test_check_flapping_with_ets(_Config) ->
     {ok, _} = start_link(),
     emqx_network_flapping:create_flapping_records(),
     FlappingRecord = emqx_network_flapping:init_flapping_record(test, 30, 1, 45/100, 30/100),
-    io:format("FlappingRecord: ~p~n", [FlappingRecord]),
     emqx_network_flapping:add_flapping_record(FlappingRecord),
     emqx_network_flapping:check_network_flapping_record(fun check_state_high_flap/0,
                                                         check_state_high_flap(),
                                                         test),
-    FlappingRecord1 = emqx_network_flapping:info_flapping_record(test),
-    io:format("Check_state_high_flap: ~p~n", [FlappingRecord1]),
+    _FlappingRecord1 = emqx_network_flapping:info_flapping_record(test),
     emqx_network_flapping:check_network_flapping_record(fun check_state_normal_flap/0,
                                                         check_state_normal_flap(),
                                                         test),
-    FlappingRecord2 = emqx_network_flapping:info_flapping_record(test),
-    io:format("Check_state_normal_flap: ~p~n", [FlappingRecord2]),
+    _FlappingRecord2 = emqx_network_flapping:info_flapping_record(test),
     emqx_network_flapping:check_network_flapping_record(fun check_state_low_flap/0,
                                                         check_state_low_flap(),
                                                         test),
-    FlappingRecord3 = emqx_network_flapping:info_flapping_record(test),
-    io:format("Check_state_low_flap: ~p~n", [FlappingRecord3]),
+    _FlappingRecord3 = emqx_network_flapping:info_flapping_record(test),
     emqx_network_flapping:delete_flapping_record(test),
     emqx_network_flapping:drop_flapping_records(),
     stop().
@@ -134,7 +130,6 @@ init([]) ->
     Data = 0,
     {ok, state_a, Data}.
 
-
 handle_event({call, From}, check_state_high_flap, State, Data) ->
     NewData = Data + 8,
     NewState = state_switch(State, NewData),
@@ -164,5 +159,3 @@ state_switch(State, Data) ->
         _  ->
             State
     end.
-
-

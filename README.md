@@ -14,8 +14,6 @@ The chart below shows how token bucket algorithm works:
 
 ![rate-limit](./images/01-rate-limit.png)
 
-
-
 ## Token Bucket Algorithm
 
 **emqx_token_bucket** - Simple (token bucket) implementation which control network data flow by returning a time interval for user.
@@ -65,7 +63,7 @@ This algorithm is used to check to see if the state has started or stopped flapp
 
 * Storing the results of the last few checks of the host or service
 * Analyzing the historical check results and determine where state changes/transitions occur
-* Using the state transitions to determine a percent state change value (a measure of change** for the host or service
+* Using the state transitions to determine a percent state change value (a measure of change for the host or service)
 * Comparing the percent state change value against low and high flapping thresholds
 
 
@@ -97,7 +95,6 @@ FlappingState = FlappingRecord1#flapping_record.flapping_state.
 ```erlang
 emqx_network_flapping:create_flapping_records(),
 FlappingRecord = emqx_network_flapping:init_flapping_record(test, 30, 1, 45/100, 30/100),
-io:format("FlappingRecord: ~p~n", [FlappingRecord]),
 emqx_network_flapping:add_flapping_record(FlappingRecord),
 emqx_network_flapping:check_network_flapping_record(fun check_state_high_flap/0,
                                                     check_state_high_flap(),

@@ -97,8 +97,7 @@ init_flapping_record(Name, CheckTimes, TimeInterval, HighFlapTreshold,
        check_times = CheckTimes,
        time_interval = TimeInterval,
        high_flap_treshold = HighFlapTreshold,
-       low_flap_treshold = LowFlapTreshold
-      }.
+       low_flap_treshold = LowFlapTreshold}.
 
 -spec check_network_flapping_record(Fun::fun(), term(), atom()) -> atom().
 check_network_flapping_record(CheckStateFun, StateChecked, Name) ->
@@ -146,7 +145,6 @@ check_state_transition(Count, TimeInterval, Total, CheckState, State, Weight)
     case State =:= NewState of
         false ->
             NewWeight = Weight + weight_transition(Total - Count + 1, Total),
-            io:format("Weight : ~p  ~p  ~p~n", [Weight, Total - Count + 1, Total]),
             check_state_transition(Count - 1, TimeInterval, Total, CheckState, NewState, NewWeight);
         true ->
             check_state_transition(Count - 1, TimeInterval, Total, CheckState, State, Weight)
